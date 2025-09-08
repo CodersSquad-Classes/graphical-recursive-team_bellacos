@@ -29,9 +29,9 @@ From the _Essential Algorithms: A Practical Approach to Computer Algorithms_ boo
 
 
 # How to compile & run you program
+The algorithm selected was the Hilbert curve made with a recursive function
 
-- _You must document compilation and execution here_
-- _Don't forget to document which algorithm you're implementing_
+To compile the code you must first add a txt file named "text.txt", that's where the x and y points will be stored and to run the code you must only add the execution file and the order of which you wish the Hilbert curve must have.
 
 # Grading Policy
 
