@@ -1,20 +1,83 @@
 #include <iostream>
 #include <cstdlib>  // Required for atoi (converts string to integer)
-#include <pthread.h>
 #include <vector>
+#include <fstream>
 #include <cstring>
 
 using namespace std;
+
+// File where the line segments will be saved
+    ofstream outfile("text.txt"); // Referenced from chatGPT
+
+    //Saves the curent x and y position
+    int curX, curY; // Referenced from ChatGPT
+
+
+//Saves the last line
+void line(int x, int y) {
+    outfile << "(" << curX << "," << curY << ")"
+            << "(" << x << "," << y << ")" << endl; // Outfile referenced form ChatGPT
+    curX = x;
+    curY = y;
+}
+
+void hilbert(int n, int size, int dx, int dy, int dx2, int dy2) {
+    if (n <= 0) {
+        return;
+    }
+
+    hilbert(n - 1, size, dy2, dx2, dx, dy);
+
+    line(curX + dx * size, curY + dy * size);
+
+    curX += dx * size;
+    curY += dy * size;
+
+    hilbert(n - 1, size, dx, dy, dx2, dy2);
+
+    line(curX + dx2 * size, curY + dy2 * size);
+
+    curX = curX + dx2 * size;
+    curY = curY + dy2 * size;
+
+    hilbert(n - 1, size, dx, dy, dx2, dy2);
+
+    line(curX - dx * size, curY - dy * size);
+
+    curX = curX - dx * size;
+    curY = curY - dy * size;
+
+    hilbert(n - 1, size, -dy2, -dx2, -dx, -dy);
+}
 
 int main(int argc, char *argv[]){
     // argc is the argument count, including the program name itself.
     // argv is an array of strings (char pointers), where each element
     // is a command-line argument.
-    // Check if exactly one argument (besides the program name) is provided.
-
-    //This if is what makes sure that the user sends the correct amount of parameters
-    if (argc != 3) {
-        cerr << "Usage: " << argv[0] << " <integer>" << endl;
-        return 1; // Indicate an error
+    // Check if exactly one argument (besides the program name) is provided
+    if (argc != 2) {
+        cerr << "Usage: " << argv[0] << " <order>" << endl;
+        return 1;
     }
+
+    int order = atoi(argv[1]);
+
+    const int canvasSize = 1024; // Referenced from ChatGPT to start in the right position
+
+    // Number of segments per side = 2^order
+    int numSegments = 1 << order;
+
+    // Step size for each line
+    int step = canvasSize / numSegments;
+
+    // Starting position (bottom-left, centered in first cell)
+    curX = step / 2;
+    curY = step / 2;
+
+    hilbert(order, step, 0, 1, 1, 0);
+
+    outfile.close();
+    cout << "Hilbert curve of order " << order << endl;
+    cout << " written to text.txt" << endl;
+    return 0;
 }
