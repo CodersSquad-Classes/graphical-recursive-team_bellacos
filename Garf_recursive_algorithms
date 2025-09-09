@@ -15,11 +15,11 @@ using namespace std;
 
 //Saves the last line
 void line(int x, int y) {
-    outfile << "(" << curX << "," << curY << ")"
-            << "(" << x << "," << y << ")" << endl; // Outfile referenced form ChatGPT
+    outfile << "(" << x << "," << y << ")" << endl;
     curX = x;
     curY = y;
 }
+
 
 void hilbert(int n, int size, int dx, int dy, int dx2, int dy2) {
     if (n <= 0) {
@@ -30,22 +30,13 @@ void hilbert(int n, int size, int dx, int dy, int dx2, int dy2) {
 
     line(curX + dx * size, curY + dy * size);
 
-    curX += dx * size;
-    curY += dy * size;
-
     hilbert(n - 1, size, dx, dy, dx2, dy2);
 
     line(curX + dx2 * size, curY + dy2 * size);
 
-    curX = curX + dx2 * size;
-    curY = curY + dy2 * size;
-
     hilbert(n - 1, size, dx, dy, dx2, dy2);
 
     line(curX - dx * size, curY - dy * size);
-
-    curX = curX - dx * size;
-    curY = curY - dy * size;
 
     hilbert(n - 1, size, -dy2, -dx2, -dx, -dy);
 }
@@ -68,16 +59,18 @@ int main(int argc, char *argv[]){
     int numSegments = 1 << order;
 
     // Step size for each line
-    int step = canvasSize / numSegments;
+    int step = canvasSize / (1 << order);
+
 
     // Starting position (bottom-left, centered in first cell)
-    curX = step / 2;
-    curY = step / 2;
-
-    hilbert(order, step, 0, 1, 1, 0);
+    curX = 0;
+    curY = 0;
+    line(curX, curY); // Draw the first point
+    hilbert(order, step, 1, 0, 0, 1);
 
     outfile.close();
     cout << "Hilbert curve of order " << order << endl;
     cout << " written to text.txt" << endl;
     return 0;
 }
+   
